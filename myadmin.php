@@ -5,7 +5,7 @@
  - add way to call/hook into install/uninstall
 */
 return [
-	'name' => 'MyAdmin Backup Services Module for MyAdmin',
+	'name' => 'Backup Services Module',
 	'description' => 'Allows selling of Backup Services Module',
 	'help' => '',
 	'module' => 'backups',
