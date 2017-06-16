@@ -18,8 +18,8 @@ class Plugin {
 
 	public static function Hooks() {
 		return [
-			'backups.load_processing' => ['Detain\MyAdminBackups\Plugin', 'Load'],
-			'backups.settings' => ['Detain\MyAdminBackups\Plugin', 'Settings'],
+			'backups.load_processing' => [__CLASS__, 'Load'],
+			'backups.settings' => [__CLASS__, 'Settings'],
 		];
 	}
 
