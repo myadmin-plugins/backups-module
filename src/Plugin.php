@@ -13,8 +13,8 @@ class Plugin {
 	public static $type = 'module';
 	public static $settings = [
 		'SERVICE_ID_OFFSET' => 2000,
-		'USE_REPEAT_INVOICE' => true,
-		'USE_PACKAGES' => true,
+		'USE_REPEAT_INVOICE' => TRUE,
+		'USE_PACKAGES' => TRUE,
 		'BILLING_DAYS_OFFSET' => 0,
 		'IMGNAME' => 'servers_48.png',
 		'REPEAT_BILLING_METHOD' => PRORATE_BILLING,
@@ -47,6 +47,6 @@ class Plugin {
 
 	public static function getSettings(GenericEvent $event) {
 		$settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_backups', 'Out Of Stock Backups', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_BACKUPS'), array('0', '1'), array('No', 'Yes', ));
+		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_backups', 'Out Of Stock Backups', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_BACKUPS'), array('0', '1'), array('No', 'Yes',));
 	}
 }
