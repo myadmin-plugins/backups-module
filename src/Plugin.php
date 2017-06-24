@@ -11,6 +11,24 @@ class Plugin {
 	public static $help = '';
 	public static $module = 'backups';
 	public static $type = 'module';
+	public static $settings = [
+		'SERVICE_ID_OFFSET' => 2000,
+		'USE_REPEAT_INVOICE' => true,
+		'USE_PACKAGES' => true,
+		'BILLING_DAYS_OFFSET' => 0,
+		'IMGNAME' => 'servers_48.png',
+		'REPEAT_BILLING_METHOD' => PRORATE_BILLING,
+		'DELETE_PENDING_DAYS' => 45,
+		'SUSPEND_DAYS' => 14,
+		'SUSPEND_WARNING_DAYS' => 7,
+		'TITLE' => 'Backup Services',
+		'MENUNAME' => 'Backups',
+		'EMAIL_FROM' => 'support@interserver.net',
+		'TBLNAME' => 'Backups',
+		'TABLE' => 'backups',
+		'TITLE_FIELD' => 'backup_username',
+		'TITLE_FIELD2' => 'backup_ip',
+		'PREFIX' => 'backup'];
 
 
 	public function __construct() {
