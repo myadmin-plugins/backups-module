@@ -42,7 +42,50 @@ class Plugin {
 	}
 
 	public static function loadProcessing(GenericEvent $event) {
-
+		$service = $event->getSubject();
+		$service->setModule(self::$module)
+			->set_enable(function($service) {
+				$serviceInfo = $service->getServiceInfo();
+				$settings = get_module_settings(self::$module);
+				$db = get_module_db(self::$module);
+				$db->query("update ".$settings['TABLE']." set ".$settings['PREFIX']."_status='pending-setup' where ".$settings['PREFIX']."_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
+				$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+				$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'initial_install', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+				$smarty = new \TFSmarty;
+				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
+				$email = $smarty->fetch('email/admin_email_backup_pending_setup.tpl');
+				$headers = '';
+				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
+				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
+				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
+				$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
+				admin_mail($subject, $email, $headers, false, 'admin_email_backup_pending_setup.tpl');
+			})->set_reactivate(function($service) {
+				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
+				$serviceInfo = $service->getServiceInfo();
+				$settings = get_module_settings(self::$module);
+				$db = get_module_db(self::$module);
+				if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted' || $serviceInfo[$settings['PREFIX'].'_ip'] == '') {
+					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					$db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_status='pending-setup' where {$settings['PREFIX']}_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
+					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'initial_install', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+				} else {
+					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					$db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_status='active' where {$settings['PREFIX']}_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
+					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'enable', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'start', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+				}
+				$smarty = new \TFSmarty;
+				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
+				$email = $smarty->fetch('email/admin_email_backup_reactivated.tpl');
+				$subject = $serviceInfo[$settings['TITLE_FIELD']].' '.$serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name'].' '.$settings['TBLNAME'].' Re-Activated';
+				$headers = '';
+				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
+				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
+				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
+				admin_mail($subject, $email, $headers, FALSE, 'admin_email_backup_reactivated.tpl');
+			})->set_disable(function($service) {
+			})->register();
 	}
 
 	public static function getSettings(GenericEvent $event) {
