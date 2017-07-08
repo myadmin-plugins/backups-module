@@ -6,7 +6,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Plugin {
 
-	public static $name = 'Backup Services Module';
+	public static $name = 'Backup Services';
 	public static $description = 'Allows selling of Backups';
 	public static $help = '';
 	public static $module = 'backups';
