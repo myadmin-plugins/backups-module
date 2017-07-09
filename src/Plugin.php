@@ -67,7 +67,7 @@ class Plugin {
 				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
 				$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
-				admin_mail($subject, $email, $headers, false, 'admin_email_backup_pending_setup.tpl');
+				admin_mail($subject, $email, $headers, FALSE, 'admin_email_backup_pending_setup.tpl');
 			})->set_reactivate(function($service) {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$serviceInfo = $service->getServiceInfo();
