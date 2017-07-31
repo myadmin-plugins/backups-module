@@ -109,6 +109,10 @@ class Plugin {
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
 				admin_mail($subject, $email, $headers, FALSE, 'admin_email_backup_reactivated.tpl');
 			})->set_disable(function($service) {
+			})->setTerminate(function($service) {
+				$serviceInfo = $service->getServiceInfo();
+				$settings = get_module_settings(self::$module);
+				$GLOBALS['tf']->history->add(self::$module . 'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 			})->register();
 	}
 
