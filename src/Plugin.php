@@ -77,13 +77,13 @@ class Plugin {
 				$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'initial_install', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				$smarty = new \TFSmarty;
 				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
-				$email = $smarty->fetch('email/admin_email_backup_pending_setup.tpl');
+				$email = $smarty->fetch('email/admin/backup_pending_setup.tpl');
 				$headers = '';
 				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
 				$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
-				admin_mail($subject, $email, $headers, FALSE, 'admin_email_backup_pending_setup.tpl');
+				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_pending_setup.tpl');
 			})->setReactivate(function($service) {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$serviceInfo = $service->getServiceInfo();
@@ -101,13 +101,13 @@ class Plugin {
 				}
 				$smarty = new \TFSmarty;
 				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
-				$email = $smarty->fetch('email/admin_email_backup_reactivated.tpl');
+				$email = $smarty->fetch('email/admin/backup_reactivated.tpl');
 				$subject = $serviceInfo[$settings['TITLE_FIELD']].' '.$serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name'].' '.$settings['TBLNAME'].' Re-Activated';
 				$headers = '';
 				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
-				admin_mail($subject, $email, $headers, FALSE, 'admin_email_backup_reactivated.tpl');
+				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_reactivated.tpl');
 			})->setDisable(function($service) {
 			})->setTerminate(function($service) {
 				$serviceInfo = $service->getServiceInfo();
