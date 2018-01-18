@@ -24,5 +24,5 @@ composer require detain/myadmin-backups-module
 
 ## License
 
-The Backup Services Module for MyAdmin class is licensed under the LGPL-v2 license.
+The Backup Services Module for MyAdmin class is licensed under the LGPL-v2.1 license.
 
