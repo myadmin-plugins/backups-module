@@ -82,9 +82,9 @@ class Plugin {
 				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
 				$email = $smarty->fetch('email/admin/backup_pending_setup.tpl');
 				$headers = '';
-				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
-				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
-				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
+				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
+				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
+				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
 				$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
 				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_pending_setup.tpl');
 			})->setReactivate(function($service) {
@@ -107,9 +107,9 @@ class Plugin {
 				$email = $smarty->fetch('email/admin/backup_reactivated.tpl');
 				$subject = $serviceInfo[$settings['TITLE_FIELD']].' '.$serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name'].' '.$settings['TBLNAME'].' Re-Activated';
 				$headers = '';
-				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
-				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
-				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
+				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
+				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
+				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
 				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_reactivated.tpl');
 			})->setDisable(function($service) {
 			})->setTerminate(function($service) {
