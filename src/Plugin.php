@@ -3,6 +3,7 @@
 namespace Detain\MyAdminBackups;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
+use \AcronisBackup;
 
 /**
  * Class Plugin
@@ -79,7 +80,7 @@ class Plugin {
 					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
 					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 					function_requirements('class.AcronisBackup');
-					$bkp = new AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
+					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$bkp->activate();
 				} else {
 					$db->query('update '.$settings['TABLE'].' set '.$settings['PREFIX']."_status='pending-setup' where ".$settings['PREFIX']."_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
