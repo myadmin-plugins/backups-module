@@ -77,11 +77,17 @@ class Plugin {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$db = get_module_db(self::$module);
 				if($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
-					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
-					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
-					$bkp->activate();
+					$activate = $bkp->activate();
+					if($activate !== FALSE) {
+						$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active', {$settings['PREFIX']}_server_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
+						$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					} else {
+						$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='pending-setup', {$settings['PREFIX']}_server_status='pending-setup' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
+						$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					}
 				} else {
 					$db->query('update '.$settings['TABLE'].' set '.$settings['PREFIX']."_status='pending-setup' where ".$settings['PREFIX']."_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
 					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
