@@ -75,18 +75,26 @@ class Plugin {
 				$settings = get_module_settings(self::$module);
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$db = get_module_db(self::$module);
-				$db->query('update '.$settings['TABLE'].' set '.$settings['PREFIX']."_status='pending-setup' where ".$settings['PREFIX']."_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
-				$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
-				$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'initial_install', '', $serviceInfo[$settings['PREFIX'].'_custid']);
-				$smarty = new \TFSmarty;
-				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
-				$email = $smarty->fetch('email/admin/backup_pending_setup.tpl');
-				$headers = '';
-				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
-				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
-				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
-				$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
-				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_pending_setup.tpl');
+				if($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
+					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
+					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					function_requirements('class.AcronisBackup');
+					$bkp = new AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
+					$bkp->activate();
+				} else {
+					$db->query('update '.$settings['TABLE'].' set '.$settings['PREFIX']."_status='pending-setup' where ".$settings['PREFIX']."_id='{$serviceInfo[$settings['PREFIX'].'_id']}'", __LINE__, __FILE__);
+					$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'initial_install', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+					$smarty = new \TFSmarty;
+					$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
+					$email = $smarty->fetch('email/admin/backup_pending_setup.tpl');
+					$headers = '';
+					$headers .= 'MIME-Version: 1.0'.PHP_EOL;
+					$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
+					$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
+					$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
+					admin_mail($subject, $email, $headers, FALSE, 'admin/backup_pending_setup.tpl');
+				}
 			})->setReactivate(function($service) {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$serviceInfo = $service->getServiceInfo();
@@ -125,5 +133,7 @@ class Plugin {
 	public static function getSettings(GenericEvent $event) {
 		$settings = $event->getSubject();
 		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_backups', 'Out Of Stock Backups', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_text_setting('API', 'AcronisBackup', 'acronis_login', 'Login Name', 'Login Name', (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
+		$settings->add_text_setting('API', 'AcronisBackup', 'acronis_password', 'Password', 'Password', (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
 	}
 }
