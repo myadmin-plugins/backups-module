@@ -10,8 +10,8 @@ use \AcronisBackup;
  *
  * @package Detain\MyAdminBackups
  */
-class Plugin {
-
+class Plugin
+{
 	public static $name = 'Backup Services';
 	public static $description = 'Allows selling of Backups';
 	public static $help = '';
@@ -19,8 +19,8 @@ class Plugin {
 	public static $type = 'module';
 	public static $settings = [
 		'SERVICE_ID_OFFSET' => 2000,
-		'USE_REPEAT_INVOICE' => TRUE,
-		'USE_PACKAGES' => TRUE,
+		'USE_REPEAT_INVOICE' => true,
+		'USE_PACKAGES' => true,
 		'BILLING_DAYS_OFFSET' => 0,
 		'IMGNAME' => 'network-drive.png',
 		'REPEAT_BILLING_METHOD' => PRORATE_BILLING,
@@ -39,13 +39,15 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function getHooks() {
+	public static function getHooks()
+	{
 		return [
 			self::$module.'.load_processing' => [__CLASS__, 'loadProcessing'],
 			self::$module.'.settings' => [__CLASS__, 'getSettings'],
@@ -56,7 +58,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getDeactivate(GenericEvent $event) {
+	public static function getDeactivate(GenericEvent $event)
+	{
 		myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
 		$serviceClass = $event->getSubject();
 		$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
@@ -65,23 +68,23 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function loadProcessing(GenericEvent $event) {
+	public static function loadProcessing(GenericEvent $event)
+	{
 		/**
 		 * @var \ServiceHandler $service
 		 */
 		$service = $event->getSubject();
 		$service->setModule(self::$module)
-			->setEnable(function($service) {
+			->setEnable(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
-				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
+				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$db = get_module_db(self::$module);
-				if($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
-					
+				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$activate = $bkp->activate();
-					if($activate !== FALSE) {
+					if ($activate !== false) {
 						$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active', {$settings['PREFIX']}_server_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
 						$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 					} else {
@@ -100,10 +103,10 @@ class Plugin {
 					$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
 					$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
 					$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
-					admin_mail($subject, $email, $headers, FALSE, 'admin/backup_pending_setup.tpl');
+					admin_mail($subject, $email, $headers, false, 'admin/backup_pending_setup.tpl');
 				}
-			})->setReactivate(function($service) {
-				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
+			})->setReactivate(function ($service) {
+				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				$db = get_module_db(self::$module);
@@ -125,9 +128,9 @@ class Plugin {
 				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
-				admin_mail($subject, $email, $headers, FALSE, 'admin/backup_reactivated.tpl');
-			})->setDisable(function($service) {
-			})->setTerminate(function($service) {
+				admin_mail($subject, $email, $headers, false, 'admin/backup_reactivated.tpl');
+			})->setDisable(function ($service) {
+			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
@@ -137,7 +140,8 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event) {
+	public static function getSettings(GenericEvent $event)
+	{
 		$settings = $event->getSubject();
 		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_backups', 'Out Of Stock Backups', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
 		$settings->add_text_setting('API', 'AcronisBackup', 'acronis_login', 'Login Name', 'Login Name', (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
