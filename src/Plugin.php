@@ -130,6 +130,11 @@ class Plugin
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
 				admin_mail($subject, $email, $headers, false, 'admin/backup_reactivated.tpl');
 			})->setDisable(function ($service) {
+				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
+					function_requirements('class.AcronisBackup');
+					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
+					$bkp->setCustomer(0);
+				}
 			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
