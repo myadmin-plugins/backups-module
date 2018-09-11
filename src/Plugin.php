@@ -133,7 +133,7 @@ class Plugin
 				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
-					$disable = $bkp->setCustomer(0);
+					$bkp->setCustomer(0);
 				}
 			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
