@@ -114,13 +114,12 @@ class Plugin
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted') {
+						$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='pending', {$settings['PREFIX']}_server_status='pending-setup' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
+						$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 						$activate = $bkp->activate();
 						if ($activate !== false) {
 							$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 							$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='active', {$settings['PREFIX']}_server_status='active' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
-						} else {
-							$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='pending', {$settings['PREFIX']}_server_status='pending-setup' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
-							$GLOBALS['tf']->history->add($settings['PREFIX'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 						}
 					} else {
 						$response = $bkp->setCustomer(1);
@@ -167,6 +166,7 @@ class Plugin
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
+					$db = get_module_db(self::$module);
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$bkp->deleteCustomer();
