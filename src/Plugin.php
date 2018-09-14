@@ -62,7 +62,15 @@ class Plugin
 	{
 		myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
 		$serviceClass = $event->getSubject();
-		$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
+		if ($serviceClass->getType()  == 10665) {
+			function_requirements('class.AcronisBackup');
+			$bkp = new \AcronisBackup($serviceClass->getId());
+			$response = $bkp->setCustomer(0);
+			if (isset($response->version))
+				$GLOBALS['tf']->history->add(self::$module, $serviceClass->getId(), 'disable', '', $serviceClass->getCustid());
+		} else {
+			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
+		}
 	}
 
 	/**
