@@ -166,11 +166,13 @@ class Plugin
 			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
-				$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$bkp->deleteCustomer();
+					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_server_status='deleted' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
+				} else {
+					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				}
 			})->register();
 	}
