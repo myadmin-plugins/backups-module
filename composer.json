@@ -1,5 +1,5 @@
 {
-	"name": "detain/myadmin-backups-module",
+	"name": "detain/backups-module",
 	"type": "myadmin-plugin",
 	"description": "Backup Services Module for MyAdmin",
 	"keywords": [

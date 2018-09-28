@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/myadmin-backups-module.iml" filepath="$PROJECT_DIR$/.idea/myadmin-backups-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/backups-module.iml" filepath="$PROJECT_DIR$/.idea/backups-module.iml" />
     </modules>
   </component>
 </project>
