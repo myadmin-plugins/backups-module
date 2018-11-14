@@ -190,11 +190,14 @@ class Plugin
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event)
-	{
-		$settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_backups', 'Out Of Stock Backups', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_text_setting('API', 'AcronisBackup', 'acronis_username', 'Login Name', 'Login Name', (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
-		$settings->add_text_setting('API', 'AcronisBackup', 'acronis_password', 'Password', 'Password', (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
+    public static function getSettings(GenericEvent $event)
+    {
+        /**
+         * @var \MyAdmin\Settings $settings
+         **/
+        $settings = $event->getSubject();
+		$settings->add_dropdown_setting(self::$module, __('General'), 'outofstock_backups', __('Out Of Stock Backups'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_text_setting(__('API'), __('AcronisBackup'), 'acronis_username', __('Login Name'), __('Login Name'), (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
+		$settings->add_text_setting(__('API'), __('AcronisBackup'), 'acronis_password', __('Password'), __('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
 	}
 }
