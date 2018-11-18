@@ -196,8 +196,8 @@ class Plugin
          * @var \MyAdmin\Settings $settings
          **/
         $settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, __('General'), 'outofstock_backups', __('Out Of Stock Backups'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_text_setting(__('API'), __('AcronisBackup'), 'acronis_username', __('Login Name'), __('Login Name'), (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
-		$settings->add_text_setting(__('API'), __('AcronisBackup'), 'acronis_password', __('Password'), __('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
+		$settings->add_dropdown_setting(self::$module, _('General'), 'outofstock_backups', _('Out Of Stock Backups'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_username', _('Login Name'), _('Login Name'), (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
+		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_password', _('Password'), _('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
 	}
 }
