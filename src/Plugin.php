@@ -60,8 +60,8 @@ class Plugin
 	 */
 	public static function getDeactivate(GenericEvent $event)
 	{
-		myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
 		$serviceClass = $event->getSubject();
+        myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
 		if ($serviceClass->getType()  == 10665) {
 			function_requirements('class.AcronisBackup');
 			$bkp = new \AcronisBackup($serviceClass->getId());
