@@ -61,13 +61,14 @@ class Plugin
 	public static function getDeactivate(GenericEvent $event)
 	{
 		$serviceClass = $event->getSubject();
-        myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
+		myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
 		if ($serviceClass->getType()  == 10665) {
 			function_requirements('class.AcronisBackup');
 			$bkp = new \AcronisBackup($serviceClass->getId());
 			$response = $bkp->setCustomer(0);
-			if (isset($response->version))
+			if (isset($response->version)) {
 				$GLOBALS['tf']->history->add(self::$module, $serviceClass->getId(), 'disable', '', $serviceClass->getCustid());
+			}
 		} else {
 			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
 		}
@@ -118,7 +119,7 @@ class Plugin
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				$db = get_module_db(self::$module);
-				if($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
+				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
 					function_requirements('class.AcronisBackup');
 					if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted') {
 						$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_status='pending', {$settings['PREFIX']}_server_status='pending-setup' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
@@ -168,8 +169,9 @@ class Plugin
 					function_requirements('class.AcronisBackup');
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$response = $bkp->setCustomer(0);
-					if(isset($response->version))
+					if (isset($response->version)) {
 						$GLOBALS['tf']->history->add(self::$module, $serviceInfo[$settings['PREFIX'].'_id'], 'disable', '', $serviceInfo[$settings['PREFIX'].'_custid']);
+					}
 				}
 			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
@@ -180,7 +182,7 @@ class Plugin
 					$bkp = new \AcronisBackup($serviceInfo[$settings['PREFIX'].'_id']);
 					$bkp->deleteCustomer();
 					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_server_status='deleted' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
-                    $GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 				} else {
 					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				}
@@ -190,12 +192,12 @@ class Plugin
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-    public static function getSettings(GenericEvent $event)
-    {
-        /**
-         * @var \MyAdmin\Settings $settings
-         **/
-        $settings = $event->getSubject();
+	public static function getSettings(GenericEvent $event)
+	{
+		/**
+		 * @var \MyAdmin\Settings $settings
+		 **/
+		$settings = $event->getSubject();
 		$settings->add_dropdown_setting(self::$module, _('General'), 'outofstock_backups', _('Out Of Stock Backups'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_username', _('Login Name'), _('Login Name'), (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_password', _('Password'), _('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
