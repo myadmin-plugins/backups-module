@@ -108,7 +108,7 @@ class Plugin
 					$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
 					$email = $smarty->fetch('email/admin/backup_pending_setup.tpl');
 					$subject = 'Backup '.$serviceInfo[$settings['TITLE_FIELD']].' Is Pending Setup';
-					(new MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/backup_pending_setup.tpl');
+					(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/backup_pending_setup.tpl');
 				}
 			})->setReactivate(function ($service) {
 				$serviceTypes = run_event('get_service_types', false, self::$module);
@@ -153,7 +153,7 @@ class Plugin
 				$smarty->assign('backup_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
 				$email = $smarty->fetch('email/admin/backup_reactivated.tpl');
 				$subject = $serviceInfo[$settings['TITLE_FIELD']].' '.$serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name'].' '.$settings['TBLNAME'].' Reactivated';
-				(new MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/backup_reactivated.tpl');
+				(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/backup_reactivated.tpl');
 			})->setDisable(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
