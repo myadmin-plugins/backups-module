@@ -69,7 +69,7 @@ class Plugin
 			if (isset($response->version)) {
 				$GLOBALS['tf']->history->add(self::$module, $serviceClass->getId(), 'disable', '', $serviceClass->getCustid());
 			}
-		} else {
+		} elseif (!in_array($serviceClass->getType(), [get_service_define('DIRECTADMIN_STORAGE')])) {
 			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
 		}
 	}
