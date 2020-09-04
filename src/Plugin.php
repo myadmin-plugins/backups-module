@@ -60,6 +60,7 @@ class Plugin
 	 */
 	public static function getDeactivate(GenericEvent $event)
 	{
+		$serviceTypes = run_event('get_service_types', false, self::$module);
 		$serviceClass = $event->getSubject();
 		myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
 		if ($serviceClass->getType()  == 10665) {
@@ -69,7 +70,8 @@ class Plugin
 			if (isset($response->version)) {
 				$GLOBALS['tf']->history->add(self::$module, $serviceClass->getId(), 'disable', '', $serviceClass->getCustid());
 			}
-		} elseif (!in_array($serviceClass->getType(), [get_service_define('DIRECTADMIN_STORAGE')])) {
+		} elseif ($serviceTypes[$serviceClass->getType()]['services_type'] == get_service_define('DIRECTADMIN_STORAGE')) {
+		} else {
 			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
 		}
 	}
@@ -158,20 +160,19 @@ class Plugin
 					} catch (\Exception $e) {
 						myadmin_log('myadmin', 'error', 'Got Exception '.$e->getMessage(), __LINE__, __FILE__, self::$module, $serviceClass->getId());
 						$serverData = get_service_master($serviceClass->getServer(), self::$module);
-						$subject = 'Cant Connect to Webhosting Server to Suspend';
+						$subject = 'Cant Connect to Webhosting Server to Reactivate';
 						$email = $subject.'<br>Username '.$serviceClass->getUsername().'<br>Server '.$serverData[$settings['PREFIX'].'_name'].'<br>'.$e->getMessage();
 						(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/website_connect_error.tpl');
 						$success = false;
 					}
 					if ($success == true && !$subevent->isPropagationStopped()) {
-						myadmin_log(self::$module, 'error', 'Dont know how to deactivate '.$settings['TBLNAME'].' '.$serviceInfo[$settings['PREFIX'].'_id'].' Type '.$serviceTypes[$serviceClass->getType()]['services_type'].' Category '.$serviceTypes[$serviceClass->getType()]['services_category'], __LINE__, __FILE__, self::$module, $serviceClass->getId());
+						myadmin_log(self::$module, 'error', 'Dont know how to reactivate '.$settings['TBLNAME'].' '.$serviceInfo[$settings['PREFIX'].'_id'].' Type '.$serviceTypes[$serviceClass->getType()]['services_type'].' Category '.$serviceTypes[$serviceClass->getType()]['services_category'], __LINE__, __FILE__, self::$module, $serviceClass->getId());
 						$success = false;
 					}
 					if ($success == true) {
-						$serviceClass->setServerStatus('deleted')->save();
-						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
-					}
-					
+						$serviceClass->setServerStatus('running')->save();
+						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'running', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					}					
 				} else {
 					if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted' || $serviceInfo[$settings['PREFIX'].'_ip'] == '') {
 						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
