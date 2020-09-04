@@ -171,6 +171,7 @@ class Plugin
 			})->setTerminate(function ($service) {
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
+				$serviceTypes = run_event('get_service_types', false, self::$module);
 				if ($serviceInfo[$settings['PREFIX'].'_type'] == 10665) {
 					$db = get_module_db(self::$module);
 					function_requirements('class.AcronisBackup');
@@ -178,6 +179,38 @@ class Plugin
 					$bkp->deleteCustomer();
 					$db->query("UPDATE {$settings['TABLE']} SET {$settings['PREFIX']}_server_status='deleted' WHERE {$settings['PREFIX']}_id='".$serviceInfo[$settings['PREFIX'].'_id']."'", __LINE__, __FILE__);
 					$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+				} elseif ($serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_type'] == get_service_define('DIRECTADMIN_STORAGE')) {
+					$class = '\\MyAdmin\\Orm\\'.get_orm_class_from_table($settings['TABLE']);
+					/** @var \MyAdmin\Orm\Product $class **/
+					$serviceClass = new $class();
+					$serviceClass->load_real($serviceInfo[$settings['PREFIX'].'_id']);
+					$subevent = new GenericEvent($serviceClass, [
+						'field1' => $serviceTypes[$serviceClass->getType()]['services_field1'],
+						'field2' => $serviceTypes[$serviceClass->getType()]['services_field2'],
+						'type' => $serviceTypes[$serviceClass->getType()]['services_type'],
+						'category' => $serviceTypes[$serviceClass->getType()]['services_category'],
+						'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid())
+					]);
+					$success = true;
+					try {
+						$GLOBALS['tf']->dispatcher->dispatch($subevent, self::$module.'.terminate');
+					} catch (\Exception $e) {
+						myadmin_log('myadmin', 'error', 'Got Exception '.$e->getMessage(), __LINE__, __FILE__, self::$module, $serviceClass->getId());
+						$serverData = get_service_master($serviceClass->getServer(), self::$module);
+						$subject = 'Cant Connect to Webhosting Server to Suspend';
+						$email = $subject.'<br>Username '.$serviceClass->getUsername().'<br>Server '.$serverData[$settings['PREFIX'].'_name'].'<br>'.$e->getMessage();
+						(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/website_connect_error.tpl');
+						$success = false;
+					}
+					if ($success == true && !$subevent->isPropagationStopped()) {
+						myadmin_log(self::$module, 'error', 'Dont know how to deactivate '.$settings['TBLNAME'].' '.$serviceInfo[$settings['PREFIX'].'_id'].' Type '.$serviceTypes[$serviceClass->getType()]['services_type'].' Category '.$serviceTypes[$serviceClass->getType()]['services_category'], __LINE__, __FILE__, self::$module, $serviceClass->getId());
+						$success = false;
+					}
+					if ($success == true) {
+						$serviceClass->setServerStatus('deleted')->save();
+						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+					}
+					
 				} else {
 					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				}
