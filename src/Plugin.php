@@ -262,5 +262,7 @@ class Plugin
 		$settings->add_dropdown_setting(self::$module, _('General'), 'outofstock_backups', _('Out Of Stock Backups'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_BACKUPS'), ['0', '1'], ['No', 'Yes']);
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_username', _('Login Name'), _('Login Name'), (defined('ACRONIS_USERNAME') ? ACRONIS_USERNAME : ''));
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_password', _('Password'), _('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
+		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_api_client_id', _('Acronis API Client ID'), _('Acronis API Client ID'), (defined('ACRONIS_API_CLIENT_ID') ? ACRONIS_API_CLIENT_ID : ''));
+		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_api_secret', _('Acronis API Secret'), _('Acronis API Secret'), (defined('ACRONIS_API_SECRET') ? ACRONIS_API_SECRET : ''));
 	}
 }
