@@ -172,7 +172,7 @@ class Plugin
 					if ($success == true) {
 						$serviceClass->setServerStatus('running')->save();
 						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'running', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
-					}					
+					}
 				} else {
 					if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted' || $serviceInfo[$settings['PREFIX'].'_ip'] == '') {
 						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_status', 'pending-setup', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
@@ -243,7 +243,7 @@ class Plugin
 						$serviceClass->setServerStatus('deleted')->save();
 						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'deleted', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 					}
-					
+
 				} else {
 					$GLOBALS['tf']->history->add(self::$module.'queue', $serviceInfo[$settings['PREFIX'].'_id'], 'destroy', '', $serviceInfo[$settings['PREFIX'].'_custid']);
 				}
@@ -264,5 +264,11 @@ class Plugin
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_password', _('Password'), _('Password'), (defined('ACRONIS_PASSWORD') ? ACRONIS_PASSWORD : ''));
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_api_client_id', _('Acronis API Client ID'), _('Acronis API Client ID'), (defined('ACRONIS_API_CLIENT_ID') ? ACRONIS_API_CLIENT_ID : ''));
 		$settings->add_text_setting(_('API'), _('AcronisBackup'), 'acronis_api_secret', _('Acronis API Secret'), _('Acronis API Secret'), (defined('ACRONIS_API_SECRET') ? ACRONIS_API_SECRET : ''));
+		$settings->setTarget('module');
+		$settings->add_master_checkbox_setting(self::$module, 'Server Settings', self::$module, 'available', 'backup_available', 'Auto-Setup', '<p>Choose which servers are used for auto-server Setups.</p>');
+		$settings->add_master_label(self::$module, 'Server Settings', self::$module, 'active_services', 'Active Backups', '<p>The current number of active Backups.</p>', 'count(backups.backup_id) as active_services');
+		$settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdsize', 'HD GB Total', '<p>The total HD Size in GB.</p>', 'backup_hdsize');
+		$settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdfree', 'HD GB Free', '<p>The total free GB.</p>', 'backup_hdfree');
+		$settings->setTarget('global');
 	}
 }
