@@ -170,8 +170,12 @@ class Plugin
 						$success = false;
 					}
 					if ($success == true) {
-						$serviceClass->setServerStatus('running')->save();
+						$serviceClass
+							->setServerStatus('running')
+							->setStatus('active')
+							->save();
 						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_server_status', 'running', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
+						$GLOBALS['tf']->history->add($settings['TABLE'], 'change_status', 'active', $serviceInfo[$settings['PREFIX'].'_id'], $serviceInfo[$settings['PREFIX'].'_custid']);
 					}
 				} else {
 					if ($serviceInfo[$settings['PREFIX'].'_server_status'] === 'deleted' || $serviceInfo[$settings['PREFIX'].'_ip'] == '') {
