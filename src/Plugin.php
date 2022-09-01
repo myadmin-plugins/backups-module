@@ -271,8 +271,8 @@ class Plugin
         $settings->setTarget('module');
         $settings->add_master_checkbox_setting(self::$module, 'Server Settings', self::$module, 'available', 'backup_available', 'Auto-Setup', '<p>Choose which servers are used for auto-server Setups.</p>');
         $settings->add_master_label(self::$module, 'Server Settings', self::$module, 'active_services', 'Active Backups', '<p>The current number of active Backups.</p>', 'count(backups.backup_id) as active_services');
-        $settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdsize', 'HD GB Total', '<p>The total HD Size in GB.</p>', 'backup_hdsize');
-        $settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdfree', 'HD GB Free', '<p>The total free GB.</p>', 'backup_hdfree');
+        $settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdsize', 'HD GB Total', '<p>The total HD Size in GB.</p>', 'backup_hdsize as hdsize');
+        $settings->add_master_label(self::$module, 'Server Settings', self::$module, 'hdfree', 'HD GB Free', '<p>The total free GB.</p>', 'backup_hdfree as hdfree');
         $settings->setTarget('global');
     }
 }
