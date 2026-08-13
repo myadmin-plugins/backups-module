@@ -1,6 +1,6 @@
 ---
 name: phpunit-plugin-test
-description: Creates or extends PHPUnit tests in `tests/PluginTest.php` following the bootstrap pattern in `tests/bootstrap.php` (dual autoloader, `PRORATE_BILLING` constant). Namespace `Detain\MyAdminBackups\Tests\`. Run with `vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/ -v`. Use when user says 'add test', 'write unit test', 'test plugin', or modifies `tests/`. Do NOT use for integration tests requiring the full MyAdmin platform. NOTE: for a plugin's contract/behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
+description: Creates or extends PHPUnit tests in `tests/PluginTest.php` following the bootstrap pattern in `tests/bootstrap.php` (dual autoloader, `PRORATE_BILLING` constant). Namespace `Detain\MyAdminBackups\Tests\`. Run with `vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/ -v`. Use when user says 'add test', 'write unit test', 'test plugin', or modifies `tests/`. Do NOT use for integration tests requiring the full MyAdmin platform. For a plugin's contract or behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
 ---
 <!-- myadmin-contract-harness-notice -->
 > ### ⚠️ Read this before the rest of the file
